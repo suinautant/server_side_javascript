@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/suinautant/server_side_javascript#readme",
   "dependencies": {
+    "express": "^4.17.1",
     "underscore": "^1.12.0"
   }
 }
