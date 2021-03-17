@@ -4,8 +4,28 @@ const port = 3000;
 
 app.set('view engine', 'pug');
 app.set('views', './views');
-app.locals.pretty = true;
 app.use(express.static('public'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.locals.pretty = true;
+
+app.get('/form_receiver', (req, res) => {
+    var title = req.query.title;
+    var description = req.query.description;
+    var output = title + ',' + description;
+    res.send(output);
+});
+
+app.post('/form_receiver', (req, res) => {
+    var title = req.body.title;
+    var description = req.body.description;
+    var output = title + ',' + description;
+    res.send(output);
+});
+
+app.get('/form', (req, res) => {
+    res.render('form');
+});
 
 app.get('/', (req, res) => {
     res.send('Hello World!');

@@ -1,0 +1,13 @@
+doctype html 
+html(lang="ko") 
+    head 
+        meta(http-equiv="Content-Type" content="text/html;charset=UTF-8")
+
+    body 
+        form(action="/form_receiver" method="post") 
+            p 
+                input(type="text" size="22" name="title")
+            p
+                textarea(name="description" cols="23") 
+            p
+                input(type="submit" value="제출")
