@@ -1,0 +1,27 @@
+doctype html 
+html(lang="ko")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title New topic
+    body 
+        h1 
+            a(href='/topic/') Server Side JavaScript 
+        ul 
+          each topic in topics
+            li
+                a(href='/topic/'+topic)= topic 
+          else 
+            li There are no topic.
+        article 
+            h2= title 
+            = description
+        h1 New Topic
+        form(action="/topic", method="post") 
+            p
+                input(type="text" name="title" placeholder="title")
+            p
+                textarea(name="description" placeholder="Description")
+            p
+                input(type="submit", value="New")
