@@ -1,0 +1,16 @@
+doctype html
+html(lang="ko")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    body 
+    h1 Products List 
+    form(action="/cart" method="post")
+        ul 
+            li history of web 1 
+                a(href="/cart?num=1&action=add") add 
+            li history of web 2 
+                a(href="/cart?num=1&action=add") add 
+    h2 
+        a(href="/cart") Cart
