@@ -54,7 +54,7 @@ app.get('/cart', (req, res) => {
         for (var name in products) {
             if (cart[name]) {
                 output += `
-                    <li>${products[name].title} : ${cart[name]}</li>
+                    <li>${products[name].title} : ${cart[name]} <a href="/del/${name}">delete</a></li>
                 `;
             }
         }
@@ -67,6 +67,15 @@ app.get('/cart', (req, res) => {
     <h2><a href="/products">Products</a></h2>
     `;
     res.send(output);
+});
+
+app.get('/del/:id', (req, res) => {
+    var id = req.params.id;
+    var cart = req.cookies.cart;
+    cart[id] = null;
+
+    res.cookie('cart', cart);
+    res.redirect('/cart');
 });
 
 app.get('/count', (req, res) => {
