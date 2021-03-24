@@ -1,9 +1,8 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const { signedCookie } = require('cookie-parser');
 const app = express();
-app.use(cookieParser());
-
-// 삭제 기능 추가 할 것
+app.use(cookieParser('kingwangjjang'));
 
 var products = {
     1: { title: 'The history of web' },
@@ -32,8 +31,8 @@ app.get('/products', (req, res) => {
 app.get('/cart/:id', (req, res) => {
     var id = req.params.id;
 
-    if (req.cookies.cart) {
-        var cart = req.cookies.cart;
+    if (req.signedCookies.cart) {
+        var cart = req.signedCookies.cart;
     } else {
         var cart = {};
     }
@@ -42,14 +41,14 @@ app.get('/cart/:id', (req, res) => {
         cart[id] = 0;
     }
     cart[id] = parseInt(cart[id]) + 1;
-    res.cookie('cart', cart);
+    res.cookie('cart', cart, { signed: true });
     res.redirect('/cart');
 });
 
 app.get('/cart', (req, res) => {
     var output = '';
-    if (req.cookies.cart) {
-        var cart = req.cookies.cart;
+    if (req.signedCookies.cart) {
+        var cart = req.signedCookies.cart;
 
         for (var name in products) {
             if (cart[name]) {
@@ -71,22 +70,22 @@ app.get('/cart', (req, res) => {
 
 app.get('/del/:id', (req, res) => {
     var id = req.params.id;
-    var cart = req.cookies.cart;
+    var cart = req.signedCookies.cart;
     cart[id] = null;
 
-    res.cookie('cart', cart);
+    res.cookie('cart', cart, { signed: true });
     res.redirect('/cart');
 });
 
 app.get('/count', (req, res) => {
-    if (req.cookies.count) {
-        var count = parseInt(req.cookies.count);
+    if (req.signedCookies.count) {
+        var count = parseInt(req.signedCookies.count);
     } else {
         var count = 0;
     }
     count = count + 1;
 
-    res.cookie('count', count);
+    res.cookie('count', count, { signed: true });
     res.send('count : ' + count);
 });
 
