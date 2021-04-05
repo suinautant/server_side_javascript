@@ -4,6 +4,7 @@ const FileStore = require('session-file-store')(session);
 const bkfd2Password = require('pbkdf2-password');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 const hasher = bkfd2Password();
 const app = express();
 // app.set('trust proxy', 1); // trust first proxy
@@ -19,6 +20,16 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.urlencoded({ extended: true }));
+
+var users = [
+    {
+        authId: 'local:egoing',
+        username: 'egoing',
+        password: '111',
+        salt: 'sdlkfjsldkf',
+        displayName: 'Egoing',
+    },
+];
 
 app.get('/count', (req, res) => {
     if (req.session.count) {
@@ -56,17 +67,18 @@ app.get('/welcome', (req, res) => {
 
 passport.serializeUser(function (user, done) {
     console.log('serializeUser', user);
-    done(null, user.username);
+    done(null, user.authId);
 });
 
 passport.deserializeUser(function (id, done) {
     console.log('deserializeUser', id);
     for (var i = 0; i < users.length; i++) {
         var user = users[i];
-        if (user.username === id) {
+        if (user.authId === id) {
             return done(null, user);
         }
     }
+    done('There is no user');
 });
 
 passport.use(
@@ -96,6 +108,45 @@ passport.use(
     })
 );
 
+passport.use(
+    new FacebookStrategy(
+        {
+            clientID: '196222458705468',
+            clientSecret: 'MUST_INPUT_KEY',
+            callbackURL: '/auth/facebook/callback',
+            profileFields: [
+                'id',
+                'email',
+                'gender',
+                'link',
+                'locale',
+                'name',
+                'timezone',
+                'updated_time',
+                'verified',
+                'displayName',
+            ],
+        },
+        function (accessToken, refreshToken, profile, done) {
+            console.log(profile);
+            var authId = 'facebook:' + profile.id;
+            for (var i = 0; i << users.length; i++) {
+                var user = users[i];
+                if (user.authId === authId) {
+                    return done(null, user);
+                }
+            }
+            var newuser = {
+                authId: authId,
+                displayName: profile.displayName,
+                email: profile.emails[0].value,
+            };
+            users.push(newuser);
+            done(null, newuser);
+        }
+    )
+);
+
 app.post(
     '/auth/login',
     passport.authenticate('local', {
@@ -105,18 +156,23 @@ app.post(
     })
 );
 
-var users = [
-    {
-        username: 'egoing',
-        password: '111',
-        salt: 'sdlkfjsldkf',
-        displayName: 'Egoing',
-    },
-];
+app.get(
+    '/auth/facebook',
+    passport.authenticate('facebook', { scope: 'email' })
+);
+
+app.get(
+    '/auth/facebook/callback',
+    passport.authenticate('facebook', {
+        successRedirect: '/welcome',
+        failureRedirect: '/auth/login',
+    })
+);
 
 app.post('/auth/register', (req, res) => {
     hasher({ password: req.body.password }, (err, pass, salt, hash) => {
         var user = {
+            authId: 'local:' + req.body.username,
             username: req.body.username,
             password: hash,
             aslt: salt,
@@ -157,6 +213,7 @@ app.get('/auth/login', (req, res) => {
         <p>
         <input type="submit">
     </form>
+    <a href="/auth/facebook">facebook</a>
     `;
     res.send(output);
 });
