@@ -4,17 +4,10 @@ module.exports = function (passport) {
     const hasher = bkfd2Password();
     const route = require('express').Router();
 
-    route.get('/logout', (req, res) => {
-        req.logout();
-        req.session.save(() => {
-            res.redirect('/welcome');
-        });
-    });
-
     route.post(
         '/login',
         passport.authenticate('local', {
-            successRedirect: '/welcome',
+            successRedirect: '/topic',
             failureRedirect: '/auth/login',
             failureFlash: false,
         })
@@ -28,7 +21,7 @@ module.exports = function (passport) {
     route.get(
         '/facebook/callback',
         passport.authenticate('facebook', {
-            successRedirect: '/welcome',
+            successRedirect: '/topic',
             failureRedirect: '/auth/login',
         })
     );
@@ -50,7 +43,7 @@ module.exports = function (passport) {
                 } else {
                     req.login(user, (err) => {
                         req.session.save(() => {
-                            res.redirect('/welcome');
+                            res.redirect('/topic');
                         });
                     });
                 }
@@ -59,11 +52,28 @@ module.exports = function (passport) {
     });
 
     route.get('/register', (req, res) => {
-        res.render('auth/register');
+        var sql = 'SELECT id,title FROM topic';
+        conn.query(sql, (err, topics, fields) => {
+            res.render('auth/register', {
+                topics: topics,
+            });
+        });
     });
 
     route.get('/login', (req, res) => {
-        res.render('auth/login');
+        var sql = 'SELECT id,title FROM topic';
+        conn.query(sql, (err, topics, fields) => {
+            res.render('auth/login', {
+                topics: topics,
+            });
+        });
+    });
+
+    route.get('/logout', (req, res) => {
+        req.logout();
+        req.session.save(() => {
+            res.redirect('/topic');
+        });
     });
 
     return route;

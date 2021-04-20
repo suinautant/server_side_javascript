@@ -1,8 +1,9 @@
-h1 Login
-form(action='/auth/login' method='post')
-  input(type='text' placeholder='username' name='username')
-  p
-    input(type='password' placeholder='password' name='password')
-  p
-    input(type='submit')
-a(href='/auth/facebook') facebook
+extends ../layout
+block content 
+    form(action='/auth/login' method='post')
+      input(type='text' placeholder='username' name='username')
+      p
+        input(type='password' placeholder='password' name='password')
+      p
+        input(type='submit')
+    a(href='/auth/facebook') facebook

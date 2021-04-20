@@ -21,6 +21,8 @@ module.exports = function () {
         })
     );
     app.use(express.urlencoded({ extended: true }));
+    app.use(express.json());
+    app.locals.pretty = true;
 
     app.set('views', './views/mysql');
     app.set('view engine', 'pug');
